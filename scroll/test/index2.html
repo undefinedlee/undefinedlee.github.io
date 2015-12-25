@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <style type="text/css">
+    #scroll{
+    	position: absolute;
+    	left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+    	overflow: hidden;
+        background-color: #999;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    #scroll div{
+    	position: absolute;
+    	left: 0;
+        right: 0;
+    	text-align: center;
+    	-webkit-user-select: none;
+        padding: 10px;
+        background-color: #f5f2ec;
+        box-shadow: 0 0 50px rgba(0,0,0,.5);
+    }
+    #scroll p{
+    	margin: 10px 0;
+    	background-color: #ddd;
+        height: 80px;
+        line-height: 80px;
+        background-color: #fff;
+        box-shadow: 0 1px 3px rgba(0,0,0,.15);
+        border-radius: 2px;
+        font-size: 18px;
+        color: #555;
+    }
+    </style>
+</head>
+<body>
+	<div id="scroll">
+		<div></div>
+	</div>
+	<script type="text/javascript" src="../index.js"></script>
+	<script type="text/javascript">
+		var container = document.getElementById("scroll"),
+			target = container.getElementsByTagName("div")[0];
+
+		var html = [];
+		for(var i = 0; i < 100; i ++){
+			html.push('<p>{num}</p>'.replace(/\{num\}/g, Math.random() * 100));
+		}
+		target.innerHTML = html.join("");
+
+		/*var scroll = new Scroll({
+			container: container,
+			target: target
+		});
+        scroll.onScroll(function(e){
+            console.log(e.scrollTop);
+        });*/
+	</script>
+</body>
+</html>
