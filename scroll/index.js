@@ -15,19 +15,19 @@
  */
 
 // 帧频
-var fps = 25;
+var fps = 50;
 // 弹力系数
 var CSpring = 10;
 // 加速度系数
-var CA = 0.1;
+var CA = 0.05;
 // 空气阻力系数
 var CAir = 0.015;
 // 最小阻力
-var minF = 10;
+var minF = 7;
 // 反弹系数
-var CBack = 0.2;
+var CBack = 0.1;
 // 最低反弹速度
-var minVBack = 1;
+var minVBack = 0.5;
 
 function Scroll(config, pluginsConfig){
 	this.container = config.container;
