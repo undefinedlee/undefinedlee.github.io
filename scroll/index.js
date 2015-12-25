@@ -15,23 +15,24 @@
  */
 
 // 帧频
-var fps = 25;
+var fps = 50;
 // 弹力系数
 var CSpring = 10;
 // 加速度系数
-var CA = 0.1;
+var CA = 0.05;
 // 空气阻力系数
 var CAir = 0.015;
 // 最小阻力
 var minF = 10;
 // 反弹系数
-var CBack = 0.2;
+var CBack = 0.1;
 // 最低反弹速度
-var minVBack = 1;
+var minVBack = 0.5;
 
 function Scroll(config, pluginsConfig){
 	this.container = config.container;
 	this.target = config.target;
+	this.listeners = {};
 
 	this.refreshRange();
 	this.bindEvent();
@@ -50,7 +51,7 @@ function Scroll(config, pluginsConfig){
 			return;
 		}
 
-		new plugin.factory(self, config && typeof config === "object" ? config : {});
+		plugin.factory(self, config && typeof config === "object" ? config : {});
 	});
 }
 Scroll.prototype = {
@@ -71,6 +72,18 @@ Scroll.prototype = {
 			nowTime,
 			nowTop,
 			onchange;
+
+		function onchange(top){
+			top = +top.toFixed(2);
+
+			target.style.transform = "translateY(" + top + "px)";
+
+			var e = {
+				scrollTop: -top
+			};
+
+			self.fire("scrolling", e);
+		};
 
 		// 获取当前弹力
 		function getFSpring(){
@@ -144,9 +157,13 @@ Scroll.prototype = {
 							velocity = Math.max(minVBack, (minTop - top) * CBack);
 						}
 						self.scrollHandler = setTimeout(scroll, interval);
+						onchange(top);
+					}else{
+						onchange(top);
+						self.fire("scroll-end", {
+							scrollTop: -top
+						});
 					}
-
-					onchange(top);
 				};
 			}else{
 				scroll = function(){
@@ -170,9 +187,13 @@ Scroll.prototype = {
 							velocity = Math.min(-minVBack, (maxTop - top) * CBack);
 						}
 						self.scrollHandler = setTimeout(scroll, interval);
+						onchange(top);
+					}else{
+						onchange(top);
+						self.fire("scroll-end", {
+							scrollTop: -top
+						});
 					}
-
-					onchange(top);
 				};
 			}
 
@@ -203,28 +224,9 @@ Scroll.prototype = {
 			lastTop = nowTop = top;
 			offsetY = e.pageY - top;
 
-			var listeners = self.listeners;
-			if(listeners && listeners.length){
-				onchange = function(top){
-					top = +top.toFixed(2);
-
-					target.style.transform = "translateY(" + top + "px)";
-
-					var e = {
-						scrollTop: -top
-					};
-
-					listeners.forEach(function(listener){
-						listener.call(self, e);
-					});
-				};
-			}else{
-				onchange = function(top){
-					top = +top.toFixed(2);
-					
-					target.style.transform = "translateY(" + top + "px)";
-				};
-			}
+			self.fire("scroll-start", {
+				scrollTop: -top
+			});
 
 			document.addEventListener("touchmove", moveHandler);
 			document.addEventListener("touchend", upHandler);
@@ -239,11 +241,20 @@ Scroll.prototype = {
 			this.scrollHandler = null;
 		}
 	},
-	onScroll: function(listener){
-		if(this.listeners){
-			this.listeners.push(listener);
+	on: function(eventName, listener){
+		if(this.listeners[eventName]){
+			this.listeners[eventName].push(listener);
 		}else{
-			this.listeners = [listener];
+			this.listeners[eventName] = [listener];
+		}
+	},
+	fire: function(eventName){
+		var params;
+		if(this.listeners[eventName]){
+			params = Array.prototype.slice.call(arguments, 1);
+			this.listeners[eventName].forEach(function(listener){
+				listener.apply(this, params);
+			}.bind(this));
 		}
 	}
 };
