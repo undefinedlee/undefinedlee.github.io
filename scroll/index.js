@@ -23,7 +23,7 @@ var CA = 0.05;
 // 空气阻力系数
 var CAir = 0.015;
 // 最小阻力
-var minF = 7;
+var minF = 10;
 // 反弹系数
 var CBack = 0.1;
 // 最低反弹速度
